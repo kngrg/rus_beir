@@ -58,22 +58,18 @@ class EvaluateRetrieval:
         _map = {}
         recall = {}
         precision = {}
-        mrr = {}  
 
         for k in k_values:
             ndcg[f"NDCG@{k}"] = 0.0
             _map[f"MAP@{k}"] = 0.0
             recall[f"Recall@{k}"] = 0.0
             precision[f"P@{k}"] = 0.0
-            mrr[f"MRR@{k}"] = 0.0
 
         map_string = "map_cut." + ",".join([str(k) for k in k_values])
         ndcg_string = "ndcg_cut." + ",".join([str(k) for k in k_values])
         recall_string = "recall." + ",".join([str(k) for k in k_values])
         precision_string = "P." + ",".join([str(k) for k in k_values])
-        mrr_string = "recip_rank." + ",".join([str(k) for k in k_values])
-        evaluator = pytrec_eval.RelevanceEvaluator(qrels, {map_string, ndcg_string, recall_string, precision_string,
-                                                           mrr_string})
+        evaluator = pytrec_eval.RelevanceEvaluator(qrels, {map_string, ndcg_string, recall_string, precision_string})
         scores = evaluator.evaluate(results)
 
         for query_id in scores.keys():
@@ -82,21 +78,19 @@ class EvaluateRetrieval:
                 _map[f"MAP@{k}"] += scores[query_id]["map_cut_" + str(k)]
                 recall[f"Recall@{k}"] += scores[query_id]["recall_" + str(k)]
                 precision[f"P@{k}"] += scores[query_id]["P_" + str(k)]
-                mrr[f"MRR@{k}"] += scores[query_id]["recip_rank_" + str(k)]
 
         for k in k_values:
             ndcg[f"NDCG@{k}"] = round(ndcg[f"NDCG@{k}"] / len(scores), 5)
             _map[f"MAP@{k}"] = round(_map[f"MAP@{k}"] / len(scores), 5)
             recall[f"Recall@{k}"] = round(recall[f"Recall@{k}"] / len(scores), 5)
             precision[f"P@{k}"] = round(precision[f"P@{k}"] / len(scores), 5)
-            mrr[f"MRR@{k}"] = round(mrr[f"MRR@{k}"] / len(scores), 5)
 
         for eval in [ndcg, _map, recall, precision, mrr]:
             logger.info("\n")
             for k in eval.keys():
                 logger.info("{}: {:.4f}".format(k, eval[k]))
 
-        return ndcg, _map, recall, precision, mrr
+        return ndcg, _map, recall, precision
 
     @staticmethod
     def evaluate_custom(qrels: Dict[str, Dict[str, int]], 
