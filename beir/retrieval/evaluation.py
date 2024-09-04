@@ -85,7 +85,7 @@ class EvaluateRetrieval:
             recall[f"Recall@{k}"] = round(recall[f"Recall@{k}"] / len(scores), 5)
             precision[f"P@{k}"] = round(precision[f"P@{k}"] / len(scores), 5)
 
-        for eval in [ndcg, _map, recall, precision, mrr]:
+        for eval in [ndcg, _map, recall, precision]:
             logger.info("\n")
             for k in eval.keys():
                 logger.info("{}: {:.4f}".format(k, eval[k]))
